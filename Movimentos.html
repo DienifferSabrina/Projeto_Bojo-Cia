@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    
+    <title>Movimentos</title>
+
+    <!-- Bootstrap -->
+    <link href="bootstrap/bootstrap.css" rel="stylesheet">
+
+    <!--Angular -->
+    <script src="angular/angular.min.js"></script>
+    <script src="controller/controllerMovimentos.js"> </script>
+
+    <!-- CSS -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- SCRIPTS-->
+    <script src="jquery/jquery.min.js"></script>
+    <script src="js/Chart.js"></script>
+
+    <!-- SCRIPTS - PDF-->
+    <script src="js/pdfmake.min.js"></script>
+    <script src='js/vfs_fonts.js'></script> 
+    
+    
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
+  </head>
+
+  <body data-spy="scroll" data-offset="0" data-target="#theMenu" ng-app="Movimentos" ng-controller="ctrlMovimentos">
+        
+    <!-- Menu -->
+    <nav class="menu" id="theMenu">
+        <div class="menu-wrap">
+            <h1 class="logo"><a href="index.html#home">Home GSI</a></h1>
+            <i class="icon-remove menu-close"></i>
+            <a href="home.html">Home</a>
+            <a href="Clientes.html"> Clientes </a>
+            <a href="Estoque.html">Máterias Primas</a>
+            <a href="Movimentos.html">Movimentos</a>
+            <a href="Pedidos.html">Pedidos</a>
+            <a href="Produtos.html">Produtos</a>
+            <a href="Producao.html">Produção</a>
+            <a href="indexPrincipal.html"><i class="glyphicon glyphicon-log-out"></i>Sair</a>
+        </div>
+    
+        <!-- BOTAO MENU -->
+        <div id="menuToggle"><i class="glyphicon glyphicon-align-justify"></i></div>
+    </nav>
+
+    
+    <!-------------- Estoque ------------ -->
+    <div id="itemwrapMovimentos" data-ng-init="consultaMovimentos()">
+        
+    </div>  
+    
+    <!-- -------------- FIM - INFORMATIVO ------------ -->
+
+    <!-- ------------ ------------ -->
+    <div id="wrapper" data-ng-init="consultaMovimentos()">
+        <!--Filtro-->
+        <div id="filtro">
+            <div class="container">    
+                <input class="form-control" type="text" ng-model="criterioDeBusca" placeholder="Nome do movimento que está buscando!"/>
+            </div>
+            <br>
+        </div>   
+        <div id="w"></div>     
+        <!--Fim Filtro-->
+            
+            <!--Formulário-->
+            <div id="page-wrapper">
+                
+                <div class="row"></div> 
+                <br>     
+                
+                <!-- tabela -->
+                    <table class="table table-hover" class="centered" class="panel-heading"> <!-- tabela -->
+                        <thead>
+                            <tr>
+                                <!-- table header (célula de cabeçalho)-->
+                                <th> </th>
+                                <th> Código Movimento </th> 
+                                <th> Código Máteria Prima</th> 
+                                <th> Tipo Movimento </th>                              
+                            </tr>
+                        </thead>    
+                            <tr ng-repeat="movimento in listaMovimento | filter: {movimento:criterioDeBusca} |limitTo: 10">
+                                <td> 
+                               
+                                <td> {{movimento.id_movimento}} </td>
+                                <td> {{movimento.id_materia_prima}} </td>
+                                <td> {{movimento.tipo_movimento}} </td> 
+                            </tr>
+                    </table>
+                <!-- tabela -->
+            </div>          
+    </div>        
+    
+    <!-- -------------- INFORMATIVO ------------ -->
+    <div id="w">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- -------------- FIM - INFORMATIVO ------------ -->
+
+
+
+    <!-- -------------- INFORMAÇÕES SUPRIMENTOS ------------ -->
+    <div id="dg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <form name="movimentosForm">
+                        <h2> Informações dos Movimentos </h2>
+                        <br></br>
+
+                        <!--Categorias-->
+                        <label for="selectCategoria"> Máterias Primas </label>
+                        <select class"form-control" ng-model="movimento.id_materia_prima" id="id_materia_prima" 
+                                ng-required="true">
+                            <option value="">Selecione a Máteria Prima</option>
+                            <option ng-repeat="MateriaPrima in listaMateriasPrimas" value="{{MateriaPrima.id_materia_prima}}">      {{MateriaPrima.descricao}}
+                            </option>  
+                        </select>
+                        <!--Mostra a categoria escolhida na alteração do suprimento-->
+                        <var>{{movimento.id_materia_prima}}</var> 
+                        <!-- Fim - Categorias-->   
+                        <br></br>
+                        
+                        <!--Tipo Movimento-->
+                        <label for="selectTipoMovimento">Tipo Movimento </label>
+                        <select class"form-control" id="tipo" ng-model="movimento.tipo_movimento" ng-required="true">
+                            <option value="">Selecione o Tipo Movimento</option>
+                            <option ng-repeat="tipo_movimento in listaTipoMovimento" value="{{tipo_movimento.id_tipo_movimento}}"> 
+                                {{tipo_movimento.descricao}}
+                            </option> 
+                        </select>
+                        <!--Mostra a unidade escolhida na alteração do suprimento-->
+                        <var>{{
+                        movimento.tipo_movimento}}</var>
+                        <!--Fim - Unidades-->
+                        <br></br>
+
+
+                        <button type="button" class="btn btn-info" id="btn" ng-click="insereMovimentos()" 
+                                ng-disabled="movimentosForm.$invalid"> Inserir 
+                        </button>
+                    </form> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- -------------- FIM - INFORMAÇÕES SUPRIMENTOS ------------ -->
+    
+
+    <!-- FOOTER -->
+        <div id="c">
+            <div class="container">
+                <p>Criado por <a href="">Dieniffer e Evelyn</a></p>
+            
+            </div>
+        </div>
+    <!-- FIM - FOOTER -->
+
+        <!-- SCRIPTS  -->
+        <script src="js/classie.js"></script>
+        <script src="bootstrap/bootstrap.min.js"></script>
+        <script src="js/smoothscroll.js"></script>
+        <script src="js/main.js"></script>
+        <script type="text/javascript"> 
+            $(function(){
+                $("#btn").click(function() { //no submit do formulário
+                    //coloca todos valores de todos inputs do form como vazio
+                    $('#id_materia_prima').val(""); 
+                    $('#tipo_movimento').val(""); 
+                });
+            });
+        </script>
+
+</body>
+</html>

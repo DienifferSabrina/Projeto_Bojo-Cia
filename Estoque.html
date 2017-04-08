@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <title>Estoque</title>
+
+    <!-- Bootstrap -->
+    <link href="bootstrap/bootstrap.css" rel="stylesheet">
+
+    <!--Angular -->
+    <script src="angular/angular.min.js"></script>
+    <script src="controller/controllerEstoque.js"> </script>
+
+    <!-- CSS -->
+    <link href="css/style.css" rel="stylesheet">
+
+	<!-- SCRIPTS-->
+    <script src="jquery/jquery.min.js"></script>
+	<script src="js/Chart.js"></script>
+
+    <!-- SCRIPTS - PDF-->
+    <script src="js/pdfmake.min.js"></script>
+    <script src='js/vfs_fonts.js'></script> 
+	
+	
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
+  </head>
+
+  <body data-spy="scroll" data-offset="0" data-target="#theMenu" ng-app="Estoque" ng-controller="ctrlEstoque">
+		
+	<!-- Menu -->
+	<nav class="menu" id="theMenu">
+		<div class="menu-wrap">
+			<h1 class="logo"><a href="index.html#home">Home GSI</a></h1>
+            <i class="icon-remove menu-close"></i>
+            <a href="home.html">Home</a>
+            <a href="Clientes.html"> Clientes </a>
+            <a href="Estoque.html">Máterias Primas</a>
+            <a href="Movimentos.html">Movimentos</a>
+            <a href="Pedidos.html">Pedidos</a>
+            <a href="Produtos.html">Produtos</a>
+            <a href="Producao.html">Produção</a>
+            <a href="indexPrincipal.html"><i class="glyphicon glyphicon-log-out"></i>Sair</a>
+		</div>
+	
+		<!-- BOTAO MENU -->
+		<div id="menuToggle"><i class="glyphicon glyphicon-align-justify"></i></div>
+	</nav>
+
+	
+	<!-------------- Estoque ------------ -->
+	<div id="itemwrapEstoque" data-ng-init="consultaEstoque()">
+		
+	</div>	
+	
+	<!-- -------------- FIM - INFORMATIVO ------------ -->
+
+	<!-- ------------ ------------ -->
+	<div id="wrapper" data-ng-init="consultaEstoque()">
+        <!--Filtro-->
+        <div id="filtro">
+            <div class="container">    
+                <input class="form-control" type="text" ng-model="criterioDeBusca" placeholder="Nome da materia prima que está buscando!"/>
+            </div>
+            <br>
+        </div>   
+        <div id="w"></div>     
+        <!--Fim Filtro-->
+            
+            <!--Formulário-->
+            <div id="page-wrapper">
+                
+                <div class="row"></div> 
+                <br>     
+                
+                <!-- tabela -->
+                    <table class="table table-hover" class="centered" class="panel-heading"> <!-- tabela -->
+    					<thead>
+    						<tr>
+    							<!-- table header (célula de cabeçalho)-->
+    							<th> </th>
+    							<th> Código </th> 
+                                <th> Descrição </th> 
+                                <th> Unidade </th> 
+    							<th> Preço Unitário </th> 
+    							<th> Saldo Fisíco </th>
+    							
+    						</tr>
+    					</thead>	
+    						<tr ng-repeat="estoque in listaEstoque | filter: {estoque:criterioDeBusca} |limitTo: 10">
+    							<td> 
+                            		<button type="button" class="btn btn-success btn-circle" 
+                                		ng-click="atualiza(estoque.id_materia_prima)">
+                                		<i class="glyphicon glyphicon-pencil"></i>
+                            		</button>
+
+    		                        <button type="button" class="btn btn-danger btn-circle" 
+    		                            ng-click="removeEstoque(estoque.id_materia_prima)">
+    		                            <i class="glyphicon glyphicon-remove"></i>
+    		                        </button>
+                        		</td>
+
+    							<td> {{estoque.id_materia_prima}} </td>
+                                <td> {{estoque.descricao}} </td>
+                                <td> {{estoque.unidade}} </td> 
+    							<td> {{estoque.preco_unitario}} </td>
+    							<td> {{estoque.saldo_fisico}} </td>
+    						</tr>
+    				</table>
+                <!-- tabela -->
+            </div>          
+    </div>        
+	
+    <!-- -------------- INFORMATIVO ------------ -->
+	<div id="w">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2">
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- -------------- FIM - INFORMATIVO ------------ -->
+
+
+
+	<!-- -------------- INFORMAÇÕES SUPRIMENTOS ------------ -->
+	<div id="dg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2">
+                    <form name="estoqueForm">
+					    <h2> Informações das Máterias Primas </h2>
+                        <br></br>
+
+    					<input type="text" class="form-control" id="descricao" placeholder="Informe a Descrição"ng-model="estoque.id_materia_prima" ng-required="true"/>
+                        </br>
+                        <!--Unidades-->
+                        <label for="selectUnidade">Unidades </label>
+                        <select class"form-control" id="unidades" ng-model="estoque.unidade" ng-required="true">
+                            <option value="">Selecione a Unidade</option>
+                            <option ng-repeat="unidade in listaUnidades" value="{{unidade.id_unidade}}"> 
+                                {{unidade.descricao}}
+                            </option> 
+                        </select>
+                        <!--Mostra a unidade escolhida na alteração do suprimento-->
+                        <var>{{estoque.unidade}}</var>
+                        <!--Fim - Unidades-->
+                        <br></br>
+
+                        <input type="number" class="form-control" id="preco_unitario" placeholder="Informe o Preço Unitário" ng-model="estoque.preco_unitario" ng-required="true"/>
+                        </br>
+    				    <input type="number" class="form-control" id="saldo_fisico" placeholder="Informe a Saldo Fisíco" ng-model="estoque.saldo_fisico" ng-required="true"/>
+    				    </br>	   	
+    					
+    					<button type="button" class="btn btn-info" id="btn" ng-click="insereEstoque()" 
+                                ng-disabled="estoqueForm.$invalid"> Inserir 
+                        </button>
+    					<button type="button" class="btn btn-info" ng-click="atualizaEstoque()" ng-disabled="estoqueForm.$invalid"> Atualizar 
+                        </button>
+    				</form>	
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- -------------- FIM - INFORMAÇÕES SUPRIMENTOS ------------ -->
+	
+
+	<!-- FOOTER -->
+		<div id="c">
+			<div class="container">
+				<p>Criado por <a href="">Dieniffer e Evelyn</a></p>
+			
+			</div>
+		</div>
+	<!-- FIM - FOOTER -->
+
+        <!-- SCRIPTS  -->
+		<script src="js/classie.js"></script>
+	    <script src="bootstrap/bootstrap.min.js"></script>
+	    <script src="js/smoothscroll.js"></script>
+		<script src="js/main.js"></script>
+        <script type="text/javascript"> 
+            $(function(){
+                $("#btn").click(function() { //no submit do formulário
+                    //coloca todos valores de todos inputs do form como vazio
+                    $('#descricao').val(""); 
+                    $('#unidades').val(""); 
+                    $('#preco_unitario').val(""); 
+                    $('#saldo_fisico').val(""); 
+                });
+            });
+        </script>
+
+</body>
+</html>
